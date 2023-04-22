@@ -1,4 +1,4 @@
-import db from '../database/db.js'
+import db from './db_auth.js'
 
 const getAllUsers = async () => {
   const dataUsers = []

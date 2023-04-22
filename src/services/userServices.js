@@ -1,4 +1,4 @@
-import Users from '../models/Users.js'
+import Users from '../database/Users.js'
 
 const getAllUsers = async () => {
   const allUsers = await Users.getAllUsers()
