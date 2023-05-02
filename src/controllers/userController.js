@@ -8,9 +8,20 @@ const getUserById = (req, res) => {
   // const user = userServices.getUserById(req.body)
   res.send(`Get user with id: ${req.params.userId}`)
 }
-const createNewUser = (req, res) => {
-  // const createdUser = userServices.createNewUser(req.body)
-  res.send(`Create user with id: ${req.params.userId}`)
+const createNewUser = async (req, res) => {
+  try {
+    const uid = req.uid
+    const userData = {
+      name: req.body.name,
+      email: req.body.email,
+      university: req.body.university
+    }
+    await userServices.createNewUser(userData, uid)
+    res.send({ status: 201, message: 'Create new user success' })
+  } catch (error) {
+    console.log(error)
+    res.send({ status: 500, message: 'Create new user failed' })
+  }
 }
 const updateUserById = (req, res) => {
   // const updatedUser = userServices.updateUserById(req.params.userId, req.body)

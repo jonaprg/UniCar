@@ -1,4 +1,4 @@
-import auth from '../database/db_auth.js'
+import admin from '../database/dbAuth.js'
 
 export const authMiddleware = (req, res, next) => {
   const { authorization } = req.headers
@@ -8,14 +8,14 @@ export const authMiddleware = (req, res, next) => {
   }
   const token = authorization.split('Barear ')[1]
 
-  auth.auth()
+  admin.auth()
     .verifyIdToken(token)
     .then((decodedToken) => {
-      req.user = decodedToken
+      req.uid = decodedToken
       next()
     })
     .catch(() => {
-      res.status(401).json({ message: 'Not authorized' })
+      res.status(403).json({ message: 'Not authorized' })
     })
 }
 
