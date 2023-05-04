@@ -10,12 +10,13 @@ const getUserById = (req, res) => {
 }
 const createNewUser = async (req, res) => {
   try {
-    const uid = req.uid
+    const uid = req.uid.uid
     const userData = {
       name: req.body.name,
       email: req.body.email,
       university: req.body.university
     }
+
     await userServices.createNewUser(userData, uid)
     res.send({ status: 201, message: 'Create new user success' })
   } catch (error) {

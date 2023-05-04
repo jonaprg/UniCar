@@ -5,6 +5,7 @@ const getAllUsers = async () => {
   return allUsers
 }
 const getUserById = () => { }
+
 const createNewUser = async (data, uid) => {
   await Users.createNewUser(data, uid)
 }

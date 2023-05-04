@@ -9,5 +9,6 @@ admin.initializeApp({
 })
 
 const db = getFirestore()
+const authD = admin.auth()
 
-export default { admin, db }
+export { authD, db as default }
