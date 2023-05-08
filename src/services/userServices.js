@@ -1,19 +1,22 @@
 import Users from '../database/Users.js'
 
-const getAllUsers = async () => {
-  const allUsers = await Users.getAllUsers()
-  return allUsers
+const getUserById = async (id) => {
+  return await Users.getUserById(id)
 }
-const getUserById = () => { }
 
 const createNewUser = async (data, uid) => {
   await Users.createNewUser(data, uid)
 }
-const updateUserById = () => { }
-const deleteUserById = () => { }
+
+const updateUserById = async (data, uid) => {
+  await Users.updateUserById(data, uid)
+}
+
+const deleteUserById = async (uid) => {
+  await Users.deleteUserById(uid)
+}
 
 export default {
-  getAllUsers,
   getUserById,
   createNewUser,
   updateUserById,
