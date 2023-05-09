@@ -2,7 +2,6 @@ import userServices from '../services/userServices.js'
 
 const getUserById = async (req, res) => {
   const { id } = req.params
-  console.log('id', id)
   try {
     const user = await userServices.getUserById(id)
     res.send(user)
@@ -27,7 +26,7 @@ const createNewUser = async (req, res) => {
   }
 }
 const updateUserById = async (req, res) => {
-  const id = req.body.uid
+  const { id } = req.params
   const userData = req.body
   try {
     await userServices.updateUserById(userData, id)
@@ -37,9 +36,9 @@ const updateUserById = async (req, res) => {
   }
 }
 const deleteUserById = async (req, res) => {
-  const uid = req.body.uid
+  const { id } = req.params
   try {
-    await userServices.deleteUserById(uid)
+    await userServices.deleteUserById(id)
     res.send(`Update user with id: ${req.params.userId}`)
   } catch {
     res.send(`Eror Update user with id: ${req.params.userId}`)
