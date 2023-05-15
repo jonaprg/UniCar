@@ -12,8 +12,8 @@ const updateUserById = async (data, uid) => {
   await Users.updateUserById(data, uid)
 }
 
-const deleteUserById = async (uid) => {
-  await Users.deleteUserById(uid)
+const deleteUserById = async (id) => {
+  await Users.deleteUserById(id)
 }
 
 export default {

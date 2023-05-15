@@ -39,9 +39,9 @@ const deleteUserById = async (req, res) => {
   const { id } = req.params
   try {
     await userServices.deleteUserById(id)
-    res.send(`Update user with id: ${req.params.userId}`)
+    res.send({ status: 200, message: `Delete user with id: ${id}` })
   } catch {
-    res.send(`Eror Update user with id: ${req.params.userId}`)
+    res.send({ status: 500, message: `Error delete user with id: ${id}` })
   }
 }
 

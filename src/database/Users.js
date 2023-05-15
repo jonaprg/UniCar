@@ -21,17 +21,13 @@ const updateUserById = async (data, id) => {
   await userDoc.update(data)
 }
 
-const removeUserById = async (id) => {
-  const userDoc = await db.collection('users').doc(id).get()
-  if (!userDoc.exists) {
-    throw new Error('User not found')
-  }
-  await userDoc.delete()
+const deleteUserById = async (id) => {
+  await db.collection('users').doc(id).delete()
 }
 
 export default {
   createNewUser,
   getUserById,
   updateUserById,
-  removeUserById
+  deleteUserById
 }

@@ -1,14 +1,12 @@
 import { authD } from '../database/dbAuth.js'
 
 export const authMiddleware = (req, res, next) => {
-  console.log('req', req)
   const { authorization } = req.headers
   if (!authorization || !authorization.startsWith('Bearer ')) {
     res.status(401).json({ message: 'Not authorization' })
     return
   }
   const token = authorization.split('Bearer ')[1]
-  console.log('token', token)
   authD.verifyIdToken(token)
     .then((decodedToken) => {
       req.uid = decodedToken
