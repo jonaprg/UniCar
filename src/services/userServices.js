@@ -9,7 +9,7 @@ const createNewUser = async (data, uid) => {
 }
 
 const updateUserById = async (data, uid) => {
-  await Users.updateUserById(data, uid)
+  return await Users.updateUserById(data, uid)
 }
 
 const deleteUserById = async (id) => {

@@ -27,12 +27,14 @@ const createNewUser = async (req, res) => {
 }
 const updateUserById = async (req, res) => {
   const { id } = req.params
+  console.log('body', req.body)
+  console.log('id', id)
   const userData = req.body
   try {
     await userServices.updateUserById(userData, id)
-    res.send(`Update user with id: ${req.params.userId}`)
-  } catch {
-    res.send(`Eror Update user with id: ${req.params.userId}`)
+    res.send({ status: 200, message: `Update userID${id}` })
+  } catch (error) {
+    res.send({ status: 500, message: `Error Update userId ${id}` })
   }
 }
 const deleteUserById = async (req, res) => {

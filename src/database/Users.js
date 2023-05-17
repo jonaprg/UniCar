@@ -14,11 +14,12 @@ const getUserById = async (id) => {
 }
 
 const updateUserById = async (data, id) => {
-  const userDoc = await db.collection('users').doc(id).get()
-  if (!userDoc.exists) {
-    throw new Error('User not found')
+  try {
+    await db.collection('users').doc(id)
+      .update(data)
+  } catch (error) {
+    console.log(error)
   }
-  await userDoc.update(data)
 }
 
 const deleteUserById = async (id) => {
