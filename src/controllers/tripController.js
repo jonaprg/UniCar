@@ -1,12 +1,12 @@
 import tripServices from '../services/tripServices.js'
 
-const getTrips = async (req, res) => {
+const getTripsByUser = async (req, res) => {
   try {
-    const { origin, destination, date, seatPlaces } = req.query
-    const trips = await tripServices.getTrips(origin, destination, date, seatPlaces)
+    const { id } = req.params
+    const trips = await tripServices.getTripsByUser(id)
     res.status(200).send(trips)
   } catch {
-    res.send('Error Get trips')
+    res.status(404).send('Error Get trips')
   }
 }
 
@@ -22,36 +22,41 @@ const getTripById = async (req, res) => {
 
 const createNewTrip = async (req, res) => {
   try {
-    const userDriverId = req.body.uid
+    const userDriverId = req.body.userDriverId
     const tripData = {
-      origin: req.body.orgin,
+      origin: req.body.origin,
       destination: req.body.destination,
-      date: req.body.date,
+      date: req.body.dateTime,
       price: req.body.price,
-      seatPlaces: req.body.seatPlaces,
-      stopPoints: req.body.stopPoints,
-      modelCar: req.body.modelCar
+      seatPlaces: req.body.seats,
+      seatsAvailable: req.body.seats,
+      carBrand: req.body.carBrand ?? '',
+      carColor: req.body.carColor ?? ''
+
     }
 
-    await tripServices.createNewTrip(tripData, userDriverId)
-    res.send({ status: 201, message: 'Create new trip success' })
+    const stat = await tripServices.createNewTrip(tripData, userDriverId)
+    console.log(stat)
+    res.send(stat)
   } catch (error) {
     console.log(error)
-    res.send({ status: 500, message: 'Create new trip failed' })
+    res.send({ status: 400, message: 'Bad request ' })
   }
 }
+
 const updateTrip = async (req, res) => {
   try {
     const { tripId } = req.params
     const userId = req.body.uid
     const tripData = {
-      origin: req.body.orgin,
+      origin: req.body.origin,
       destination: req.body.destination,
-      date: req.body.date,
+      date: req.body.dateTime,
       price: req.body.price,
-      seatPlaces: req.body.seatPlaces,
-      stopPoints: req.body.stopPoints,
-      modelCar: req.body.modelCar
+      seatPlaces: req.body.seats,
+      seatsAvailable: req.body.seats,
+      carBrand: req.body.carBrand ?? '',
+      carColor: req.body.carColor ?? ''
     }
     await tripServices.updateTrip(tripData, tripId, userId)
     res.send('Update trip with')
@@ -82,7 +87,7 @@ const deletePassangerFromTrip = async (req, res) => {
 }
 
 export default {
-  getTrips,
+  getTripsByUser,
   getTripById,
   createNewTrip,
   updateTrip,

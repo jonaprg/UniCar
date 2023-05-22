@@ -1,11 +1,9 @@
 import db from './dbAuth.js'
 
-const getTrips = async (origin, destination, date, seatPlaces) => {
+const getTripsByUser = async (userId) => {
   const trips = await db.collection('trips')
-    .where('origin', '==', origin)
-    .where('destination', '==', destination)
-    .where('date', '==', date)
-    .where('seatPlaces', '==', seatPlaces)
+    .where('userDriver', '==', userId)
+    .orderBy('dateTime', 'desc')
     .get()
   return trips.docs.map(trip => trip.data())
 }
@@ -24,13 +22,15 @@ const createNewTrip = async (data, id) => {
     userDriver: id,
     origin: data.origin,
     destination: data.destination,
-    date: data.date,
+    dateTime: data.date,
     price: data.price,
     seatPlaces: data.seatPlaces,
-    stopPoints: data.stopPoints,
-    modelCar: data.modelCar,
+    seatsAvailable: data.seatsAvailable,
+    carBrand: data.carBrand || '',
+    carColor: data.carColor || '',
     passangers: []
   })
+  return JSON.stringify({ status: 201, message: 'Create new trip success' })
 }
 
 const updateTrip = async (tripData, tripId, userDriverId) => {
@@ -74,7 +74,7 @@ const deteleTripByPassanger = async (id, userId) => {
 }
 
 export default {
-  getTrips,
+  getTripsByUser,
   getTripById,
   createNewTrip,
   updateTrip,
