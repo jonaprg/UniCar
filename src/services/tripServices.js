@@ -28,6 +28,7 @@ const checkExistingTrip = async (origin, destination, date, userDriverId) => {
 }
 
 const getTripsByUser = async (userId) => {
+  console.log('Entro a getTripsByUser', userId)
   return await Trips.getTripsByUser(userId)
 }
 
@@ -60,8 +61,8 @@ const deteleTripByDriver = async (tripId, userId) => {
   await Trips.deteleTripByDriver(tripId, userId)
 }
 
-const deletePassangerFromTrip = async (tripId, userId) => {
-  await Trips.deletePassangerFromTrip(tripId, userId)
+const deletePassengerFromTrip = async (tripId, userId) => {
+  await Trips.deletePassengerFromTrip(tripId, userId)
 }
 
 export default {
@@ -70,5 +71,5 @@ export default {
   createNewTrip,
   updateTrip,
   deteleTripByDriver,
-  deletePassangerFromTrip
+  deletePassengerFromTrip
 }

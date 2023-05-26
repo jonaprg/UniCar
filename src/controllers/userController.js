@@ -6,44 +6,57 @@ const getUserById = async (req, res) => {
     const user = await userServices.getUserById(id)
     res.send(user)
   } catch {
-    res.send(`Eror Get user with id: ${req.params.userId}`)
+    res.send('Eror Get user')
   }
 }
 const createNewUser = async (req, res) => {
   try {
-    const id = req.body.uid
-    const userData = {
-      name: req.body.name,
-      email: req.body.email,
-      university: req.body.university
+    if (!req.body.name || !req.body.email || !req.body.university) {
+      res.send({ status: 400, message: 'Please provide all data' })
+      return
     }
 
-    await userServices.createNewUser(userData, id)
-    res.send({ status: 201, message: 'Create new user success' })
+    const id = req.params.id
+    const userData = {
+      name: req.body.name,
+      university: req.body.university,
+      email: req.body.email
+    }
+
+    const resCUser = await userServices.createNewUser(userData, id)
+    res.send(resCUser)
   } catch (error) {
     console.log(error)
     res.send({ status: 500, message: 'Create new user failed' })
   }
 }
 const updateUserById = async (req, res) => {
-  const { id } = req.params
-  console.log('body', req.body)
-  console.log('id', id)
-  const userData = req.body
   try {
-    await userServices.updateUserById(userData, id)
-    res.send({ status: 200, message: `Update userID${id}` })
+    if (!req.params.id) {
+      res.send({ status: 400, message: 'Please provide id' })
+      return
+    }
+
+    const { id } = req.params
+    if (!req.body) {
+      res.send({ status: 400, message: 'Please provide all data' })
+      return
+    }
+    const userData = req.body
+    const response = await userServices.updateUserById(userData, id)
+    console.log(response)
+    res.send(response)
   } catch (error) {
-    res.send({ status: 500, message: `Error Update userId ${id}` })
+    res.send({ status: 404, message: 'Error update user' })
   }
 }
 const deleteUserById = async (req, res) => {
   const { id } = req.params
   try {
-    await userServices.deleteUserById(id)
-    res.send({ status: 200, message: `Delete user with id: ${id}` })
+    const response = await userServices.deleteUserById(id)
+    res.send(response)
   } catch {
-    res.send({ status: 500, message: `Error delete user with id: ${id}` })
+    res.send({ status: 500, message: 'Error delete user' })
   }
 }
 

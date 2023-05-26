@@ -1,11 +1,30 @@
 import db from './dbAuth.js'
 
 const getTripsByUser = async (userId) => {
-  const trips = await db.collection('trips')
+  const docs = []
+
+  await db.collection('trips')
     .where('userDriver', '==', userId)
-    .orderBy('dateTime', 'desc')
     .get()
-  return trips.docs.map(trip => trip.data())
+    .then(async snapshot => {
+      snapshot.forEach(doc => {
+        docs.push(doc.data())
+      })
+      await db.collection('trips')
+        .where('passengers', 'array-contains', userId)
+        .get()
+        .then(snapshot => {
+          snapshot.forEach(doc => {
+            docs.push(doc.data())
+          })
+        })
+    })
+    .catch(err => {
+      console.log('Error getting documents', err)
+    })
+  console.log(docs)
+
+  return docs
 }
 
 const getTripById = async (id) => {
@@ -55,7 +74,7 @@ const deteleTripByDriver = async (id, userId) => {
   await tripDoc.delete()
 }
 
-const deteleTripByPassanger = async (id, userId) => {
+const deteleTripByPassenger = async (id, userId) => {
   const tripDoc = await db.collection('trips').doc(id).get()
   if (!tripDoc.exists) {
     throw new Error('Trip not found')
@@ -79,5 +98,5 @@ export default {
   createNewTrip,
   updateTrip,
   deteleTripByDriver,
-  deteleTripByPassanger
+  deteleTripByPassenger
 }

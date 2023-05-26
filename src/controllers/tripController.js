@@ -22,6 +22,14 @@ const getTripById = async (req, res) => {
 
 const createNewTrip = async (req, res) => {
   try {
+    if (!req.body.userDriverId) {
+      res.send({ status: 400, message: 'Bad request, user driver not provided' })
+      return
+    }
+    if (!req.body.origin || !req.body.destination || !req.body.dateTime || !req.body.price || !req.body.seats) {
+      res.send({ status: 400, message: 'Bad request, not all fields are provided' })
+      return
+    }
     const userDriverId = req.body.userDriverId
     const tripData = {
       origin: req.body.origin,
@@ -75,11 +83,11 @@ const deteleTripByDriver = async (req, res) => {
   }
 }
 
-const deletePassangerFromTrip = async (req, res) => {
+const deletePassengerFromTrip = async (req, res) => {
   try {
     const { tripId } = req.params
     const userId = req.body.uid
-    await tripServices.deletePassangerFromTrip(tripId, userId)
+    await tripServices.deletePassengerFromTrip(tripId, userId)
     res.send('Update trip')
   } catch {
     res.send('Error Update trip')
@@ -92,5 +100,5 @@ export default {
   createNewTrip,
   updateTrip,
   deteleTripByDriver,
-  deletePassangerFromTrip
+  deletePassengerFromTrip
 }

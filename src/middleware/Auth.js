@@ -10,7 +10,14 @@ export const authMiddleware = (req, res, next) => {
   authD.verifyIdToken(token)
     .then((decodedToken) => {
       console.log('Auth middleware')
-      req.uid = decodedToken
+      const { uid } = decodedToken
+      if (uid !== req.params.id) {
+        res.status(403).json({ message: 'Forbidden' })
+        return
+      }
+
+      req.uid = decodedToken.uid
+      console.log(req.uid)
       next()
     })
     .catch(() => {
