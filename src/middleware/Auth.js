@@ -11,12 +11,7 @@ export const authMiddleware = (req, res, next) => {
     .then((decodedToken) => {
       console.log('Auth middleware')
       const { uid } = decodedToken
-      if (uid !== req.params.id) {
-        res.status(403).json({ message: 'Forbidden' })
-        return
-      }
-
-      req.uid = decodedToken.uid
+      req.uid = uid
       console.log(req.uid)
       next()
     })
@@ -26,3 +21,8 @@ export const authMiddleware = (req, res, next) => {
 }
 
 export default authMiddleware
+
+/**       if (uid !== req.params.id) {
+        res.status(403).json({ message: 'Forbidden' })
+        return
+      } */

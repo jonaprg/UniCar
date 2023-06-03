@@ -1,8 +1,18 @@
 import tripServices from '../services/tripServices.js'
 
+const getTripsByParams = async (req, res) => {
+  try {
+    const { origin, destination, dateT, seats } = req.query
+    const trips = await tripServices.getTripsByParams({ origin, destination, dateT, seats })
+    res.status(200).send(trips)
+  } catch {
+    res.status(404).send('Error Get trips')
+  }
+}
+
 const getTripsByUser = async (req, res) => {
   try {
-    const { id } = req.params
+    const id = req.uid
     const trips = await tripServices.getTripsByUser(id)
     res.status(200).send(trips)
   } catch {
@@ -22,7 +32,7 @@ const getTripById = async (req, res) => {
 
 const createNewTrip = async (req, res) => {
   try {
-    if (!req.body.userDriverId) {
+    if (!req.uid) {
       res.send({ status: 400, message: 'Bad request, user driver not provided' })
       return
     }
@@ -30,7 +40,7 @@ const createNewTrip = async (req, res) => {
       res.send({ status: 400, message: 'Bad request, not all fields are provided' })
       return
     }
-    const userDriverId = req.body.userDriverId
+    const userDriverId = req.uid
     const tripData = {
       origin: req.body.origin,
       destination: req.body.destination,
@@ -55,7 +65,7 @@ const createNewTrip = async (req, res) => {
 const updateTrip = async (req, res) => {
   try {
     const { tripId } = req.params
-    const userId = req.body.uid
+    const userId = req.uid
     const tripData = {
       origin: req.body.origin,
       destination: req.body.destination,
@@ -74,27 +84,28 @@ const updateTrip = async (req, res) => {
 }
 const deteleTripByDriver = async (req, res) => {
   try {
-    const { tripId } = req.params
-    const userId = req.body.uid
-    await tripServices.deteleTripByDriver(tripId, userId)
-    res.send('Update trip')
+    const { id } = req.params
+    const userId = req.uid
+    const response = await tripServices.deteleTripByDriver(id, userId)
+    res.send(response)
   } catch {
-    res.send('Error Update trip')
+    res.status(400).send('Error delete trip')
   }
 }
 
 const deletePassengerFromTrip = async (req, res) => {
   try {
     const { tripId } = req.params
-    const userId = req.body.uid
-    await tripServices.deletePassengerFromTrip(tripId, userId)
-    res.send('Update trip')
+    const userId = req.uid
+    const response = await tripServices.deletePassengerFromTrip(tripId, userId)
+    res.send(response)
   } catch {
-    res.send('Error Update trip')
+    res.status(400).send('Error delete passenger of trip')
   }
 }
 
 export default {
+  getTripsByParams,
   getTripsByUser,
   getTripById,
   createNewTrip,
