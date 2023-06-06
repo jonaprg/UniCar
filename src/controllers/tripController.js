@@ -1,9 +1,21 @@
 import tripServices from '../services/tripServices.js'
 
-const getTripsByParams = async (req, res) => {
+const getTripsBySearch = async (req, res) => {
   try {
-    const { origin, destination, dateT, seats } = req.query
-    const trips = await tripServices.getTripsByParams({ origin, destination, dateT, seats })
+    const { origin, destination, seats, dateTime } = req.body
+    if (!origin || !destination || !seats || !dateTime) {
+      res.status(400).send('Bad request, not all fields are provided')
+      return
+    }
+
+    const params = {
+      origin,
+      destination,
+      seats,
+      dateTime: dateTime.split('T')[0]
+    }
+
+    const trips = await tripServices.getTripsBySearch(params)
     res.status(200).send(trips)
   } catch {
     res.status(404).send('Error Get trips')
@@ -104,8 +116,44 @@ const deletePassengerFromTrip = async (req, res) => {
   }
 }
 
+const requestPassengerToTrip = async (req, res) => {
+  try {
+    const { tripId } = req.params
+    const userId = req.uid
+    const response = await tripServices.requestPassengerToTrip(tripId, userId)
+    res.send(response)
+  } catch {
+    res.status(400).send('Error add request passenger of trip')
+  }
+}
+
+const acceptPassengerToTrip = async (req, res) => {
+  try {
+    const { tripId, passengerId } = req.params
+    const driverId = req.uid
+    const response = await tripServices.acceptPassengerToTrip(tripId, passengerId, driverId)
+    res.send(response)
+  } catch {
+    res.status(400).send('Error add passenger to trip')
+  }
+}
+
+const notAcceptedPassengerFromTrip = async (req, res) => {
+  try {
+    const { tripId, passengerId } = req.params
+    const driverId = req.uid
+    const response = await tripServices.notAcceptedPassengerFromTrip(tripId, passengerId, driverId)
+    res.send(response)
+  } catch {
+    res.status(400).send('Error to not accept passenger to trip')
+  }
+}
+
 export default {
-  getTripsByParams,
+  notAcceptedPassengerFromTrip,
+  acceptPassengerToTrip,
+  requestPassengerToTrip,
+  getTripsBySearch,
   getTripsByUser,
   getTripById,
   createNewTrip,

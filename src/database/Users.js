@@ -17,7 +17,18 @@ const getUserById = async (id) => {
   if (userDoc.empty) {
     return { status: 404, message: 'User not found' }
   }
-  return userDoc.data()
+
+  const user = userDoc.data()
+
+  const filteredFields = {}
+
+  for (const field in user) {
+    if (user[field] !== undefined && user[field] !== null) {
+      filteredFields[field] = user[field]
+    }
+  }
+
+  return filteredFields
 }
 
 const updateUserById = async (data, id) => {

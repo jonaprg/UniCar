@@ -27,8 +27,8 @@ const checkExistingTrip = async (origin, destination, date, userDriverId) => {
   }
 }
 
-const getTripsByParams = async (params) => {
-  return await Trips.getTripsByParams(params)
+const getTripsBySearch = async (params) => {
+  return await Trips.getTripsBySearch(params)
 }
 
 const getTripsByUser = async (userId) => {
@@ -68,8 +68,22 @@ const deletePassengerFromTrip = async (tripId, userId) => {
   return await Trips.deletePassengerFromTrip(tripId, userId)
 }
 
+const requestPassengerToTrip = async (tripId, userId) => {
+  return await Trips.requestPassengerToTrip(tripId, userId)
+}
+
+const acceptPassengerToTrip = async (tripId, passengerId, driverId) => {
+  return await Trips.acceptPassengerToTrip(tripId, passengerId, driverId)
+}
+const notAcceptedPassengerFromTrip = async (tripId, userId) => {
+  return await Trips.notAcceptedPassengerFromTrip(tripId, userId)
+}
+
 export default {
-  getTripsByParams,
+  notAcceptedPassengerFromTrip,
+  acceptPassengerToTrip,
+  requestPassengerToTrip,
+  getTripsBySearch,
   getTripsByUser,
   getTripById,
   createNewTrip,

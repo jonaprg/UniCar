@@ -51,6 +51,7 @@ const isValidateInputWithMaxLength = (input) => {
 
   return containsSafeCharacters && hasValidLength
 }
+
 export default {
   getUserById,
   createNewUser,

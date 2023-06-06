@@ -1,8 +1,9 @@
 import db from './dbAuth.js'
 import short from 'short-uuid'
 
-const getTripsByParams = async (params) => {
+const getTripsBySearch = async (params) => {
   const trips = []
+  console.log(params)
   await db.collection('trips')
     .where('origin', '==', params.origin)
     .where('destination', '==', params.destination)
@@ -11,6 +12,7 @@ const getTripsByParams = async (params) => {
     .get()
     .then(snapshot => {
       snapshot.forEach(doc => {
+        console.log(doc.data())
         trips.push(doc.data())
       })
     })
@@ -130,8 +132,109 @@ const deletePassengerFromTrip = async (id, userId) => {
   return JSON.stringify({ status: 200, message: 'Delete trip success' })
 }
 
+const requestPassengerToTrip = async (tripId, userId) => {
+  const tripDoc = await db.collection('trips')
+    .where('tripId', '==', tripId)
+    .limit(1)
+    .get()
+
+  if (tripDoc.empty) {
+    return JSON.stringify({ status: 404, message: 'Trip not found' })
+  }
+  if (tripDoc.docs[0].data().userDriver === userId) {
+    return JSON.stringify({ status: 404, message: 'You are the driver' })
+  }
+
+  const tripData = tripDoc.docs[0].data()
+  console.log(tripData)
+
+  // Check if the user is already in the passengers array
+  const passengerIndex = tripData.passengers.findIndex(p => p === userId)
+  if (passengerIndex !== -1) {
+    return JSON.stringify({ status: 404, message: 'Already in the trip' })
+  }
+
+  // Check if there are seats available
+  if (tripData.seatsAvailable === 0) {
+    return JSON.stringify({ status: 404, message: 'No seats available' })
+  }
+  const existsRequest = await db.collection('passengerRequest')
+    .where('tripId', '==', tripId)
+    .where('passengerId', '==', userId)
+    .limit(1)
+    .get()
+  if (!existsRequest.empty) {
+    return JSON.stringify({ status: 404, message: 'Request already sent' })
+  }
+
+  const uid = short.generate()
+  const passengerRequest = await db.collection('passengerRequest').doc(uid)
+  await passengerRequest.set({
+    uid,
+    tripId,
+    passengerId: userId,
+    status: 'pending'
+  })
+
+  return JSON.stringify({ status: 200, message: 'Request sent' })
+}
+
+const acceptPassengerToTrip = async (tripId, passengerId, driverId) => {
+  const passengerRequest = await db.collection('passengerRequest')
+    .where('tripId', '==', tripId)
+    .where('passengerId', '==', passengerId)
+    .where('status', '==', 'pending')
+    .limit(1)
+    .get()
+
+  if (passengerRequest.empty) {
+    return JSON.stringify({ status: 404, message: 'Passenger Request not found' })
+  }
+
+  const update = await passengerRequest.docs[0].ref.update({ status: 'accepted' })
+  if (!update) {
+    return JSON.stringify({ status: 404, message: 'Error accepting passenger' })
+  }
+  const tripDoc = await db.collection('trips')
+    .where('tripId', '==', tripId)
+    .where('userDriver', '==', driverId)
+    .limit(1)
+    .get()
+
+  if (tripDoc.empty) {
+    return JSON.stringify({ status: 404, message: 'Trip not found' })
+  }
+
+  const tripData = tripDoc.docs[0].data()
+  await tripDoc.docs[0].ref.update({ passengers: [...tripData.passengers, passengerId], seatsAvailable: tripData.seatsAvailable - 1 })
+  return JSON.stringify({ status: 200, message: 'Passenger accepted' })
+}
+
+const notAcceptedPassengerFromTrip = async (tripId, passengerId, driverId) => {
+  const passengerRequest = await db.collection('passengerRequest')
+    .where('tripId', '==', tripId)
+    .where('passengerId', '==', passengerId)
+    .where('status', '==', 'pending')
+    .limit(1)
+    .get()
+
+  if (passengerRequest.empty) {
+    return JSON.stringify({ status: 404, message: 'Passenger Request not found' })
+  }
+
+  const update = await passengerRequest.docs[0].ref.update({ status: 'rejected' })
+  if (!update) {
+    return JSON.stringify({ status: 404, message: 'Error rejecting passenger' })
+  }
+
+  return JSON.stringify({ status: 200, message: 'Passenger rejected' })
+}
+
 export default {
-  getTripsByParams,
+  notAcceptedPassengerFromTrip,
+  acceptPassengerToTrip,
+  requestPassengerToTrip,
+  getTripsBySearch,
   getTripsByUser,
   getTripById,
   createNewTrip,
