@@ -20,7 +20,7 @@ const createNewUser = async (data, uid) => {
 
 const updateUserById = async (data, uid) => {
   if (data.phone) {
-    if (!validateNumero(data.phone)) {
+    if (!validateNumero(Number(data.phone))) {
       return { status: 400, message: 'Phone number is not valid or too long (max 9 characters)' }
     }
   }
@@ -38,8 +38,7 @@ const deleteUserById = async (id) => {
 }
 
 const validateNumero = (numero) => {
-  if (typeof numero === 'string') return false
-  const regex = /^\d{7,9}$/
+  const regex = /^\d{6,9}$/
   console.log(regex.test(numero))
   return regex.test(numero)
 }

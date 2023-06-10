@@ -36,7 +36,7 @@ const updateUserById = async (data, id) => {
     await db.collection('users').doc(id)
       .update(data)
 
-    if (data.carBrand || data.carColor || data.preferences) {
+    if (data.carBrand || data.carColor || data.preferences || data.name) {
       await db.collection('trips')
         .where('userDriver', '==', id)
         .get()
@@ -51,6 +51,9 @@ const updateUserById = async (data, id) => {
             }
             if (data.preferences) {
               trip.preferences = data.preferences
+            }
+            if (data.name) {
+              trip.userDriverName = data.name
             }
             db.collection('trips').doc(doc.id).update(trip)
           })

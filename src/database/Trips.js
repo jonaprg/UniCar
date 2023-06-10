@@ -131,9 +131,13 @@ const deletePassengerFromTrip = async (id, userId) => {
 
   // Remove the user from the passengers array
   tripData.passengers.splice(passengerIndex, 1)
-  console.log(tripData.passengers)
   // Update the trip document
-  await tripDoc.docs[0].ref.update({ passengers: tripData.passengers })
+  await tripDoc.docs[0].ref.update(
+    {
+      passengers: tripData.passengers,
+      passengersData: { ...tripData.passengersData, [userId]: null }
+    })
+
   return JSON.stringify({ status: 200, message: 'Delete trip success' })
 }
 
@@ -221,7 +225,7 @@ const acceptPassengerToTrip = async (tripId, passengerId, driverId) => {
     seatsAvailable: tripData.seatsAvailable - 1,
     passengersData: {
       ...tripData.passengersData,
-      [passengerId]: { name: userDoc.data().name }
+      [passengerId]: { name: userDoc.data().name, id: passengerId }
     }
   })
   const update = await passengerRequest.docs[0].ref.update({ status: 'accepted' })
