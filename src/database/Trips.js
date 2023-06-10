@@ -23,30 +23,31 @@ const getTripsBySearch = async (params) => {
 }
 
 const getTripsByUser = async (userId) => {
-  const docs = []
+  const data = []
 
   await db.collection('trips')
     .where('userDriver', '==', userId)
     .get()
     .then(async snapshot => {
       snapshot.forEach(doc => {
-        docs.push(doc.data())
+        data.push(doc.data())
       })
       await db.collection('trips')
         .where('passengers', 'array-contains', userId)
         .get()
         .then(snapshot => {
           snapshot.forEach(doc => {
-            docs.push(doc.data())
+            data.push(doc.data())
           })
         })
     })
     .catch(err => {
       console.log('Error getting documents', err)
     })
-  console.log(docs)
 
-  return docs
+  console.log(data)
+
+  return data
 }
 
 const getTripById = async (id) => {
@@ -59,6 +60,7 @@ const getTripById = async (id) => {
 
 const createNewTrip = async (data, id) => {
   const newTrip = await db.collection('trips').doc()
+  const getUser = await db.collection('users').doc(id).get()
   const getDayMonthYear = data.date.split('T')[0]
   await newTrip.set({
     tripId: short.generate(),
@@ -70,9 +72,12 @@ const createNewTrip = async (data, id) => {
     price: data.price,
     seatPlaces: data.seatPlaces,
     seatsAvailable: data.seatsAvailable,
-    carBrand: data.carBrand || '',
-    carColor: data.carColor || '',
-    passengers: []
+    carBrand: getUser.data().carBrand || '',
+    carColor: getUser.data().carColor || '',
+    preferences: getUser.data().preferences || [],
+    passengers: [],
+    passengersData: {},
+    userDriverName: getUser.data().name
   })
   return JSON.stringify({ status: 201, message: 'Create new trip success' })
 }
@@ -188,13 +193,9 @@ const acceptPassengerToTrip = async (tripId, passengerId, driverId) => {
     .get()
 
   if (passengerRequest.empty) {
-    return JSON.stringify({ status: 404, message: 'Passenger Request not found' })
+    return JSON.stringify({ status: 404, message: 'Passenger Request not found, or already accepted' })
   }
 
-  const update = await passengerRequest.docs[0].ref.update({ status: 'accepted' })
-  if (!update) {
-    return JSON.stringify({ status: 404, message: 'Error accepting passenger' })
-  }
   const tripDoc = await db.collection('trips')
     .where('tripId', '==', tripId)
     .where('userDriver', '==', driverId)
@@ -206,7 +207,27 @@ const acceptPassengerToTrip = async (tripId, passengerId, driverId) => {
   }
 
   const tripData = tripDoc.docs[0].data()
-  await tripDoc.docs[0].ref.update({ passengers: [...tripData.passengers, passengerId], seatsAvailable: tripData.seatsAvailable - 1 })
+  if (tripData.seatsAvailable === 0) {
+    return JSON.stringify({ status: 404, message: 'No seats available' })
+  }
+  const userDoc = await db.collection('users').doc(passengerId).get()
+  if (userDoc.empty) {
+    return JSON.stringify({ status: 404, message: 'User not found' })
+  }
+  console.log(userDoc.data().name)
+
+  await tripDoc.docs[0].ref.update({
+    passengers: [...tripData.passengers, passengerId],
+    seatsAvailable: tripData.seatsAvailable - 1,
+    passengersData: {
+      ...tripData.passengersData,
+      [passengerId]: { name: userDoc.data().name }
+    }
+  })
+  const update = await passengerRequest.docs[0].ref.update({ status: 'accepted' })
+  if (!update) {
+    return JSON.stringify({ status: 404, message: 'Error accepting passenger' })
+  }
   return JSON.stringify({ status: 200, message: 'Passenger accepted' })
 }
 

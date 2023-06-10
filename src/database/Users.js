@@ -35,6 +35,29 @@ const updateUserById = async (data, id) => {
   try {
     await db.collection('users').doc(id)
       .update(data)
+
+    if (data.carBrand || data.carColor || data.preferences) {
+      await db.collection('trips')
+        .where('userDriver', '==', id)
+        .get()
+        .then(snapshot => {
+          snapshot.forEach(doc => {
+            const trip = doc.data()
+            if (data.carBrand) {
+              trip.carBrand = data.carBrand
+            }
+            if (data.carColor) {
+              trip.carColor = data.carColor
+            }
+            if (data.preferences) {
+              trip.preferences = data.preferences
+            }
+            db.collection('trips').doc(doc.id).update(trip)
+          })
+        })
+        .catch(err => console.log(err))
+    }
+
     return { status: 200, message: 'Update user success' }
   } catch (error) {
     console.log(error)

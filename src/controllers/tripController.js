@@ -61,7 +61,8 @@ const createNewTrip = async (req, res) => {
       seatPlaces: req.body.seats,
       seatsAvailable: req.body.seats,
       carBrand: req.body.carBrand ?? '',
-      carColor: req.body.carColor ?? ''
+      carColor: req.body.carColor ?? '',
+      preferences: req.body.preferences ?? []
 
     }
 
