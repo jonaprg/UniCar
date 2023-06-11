@@ -1,4 +1,4 @@
-import db from './dbAuth.js'
+import db, { authD } from './dbAuth.js'
 
 const createNewUser = async (data, id) => {
   const userDoc = await db.collection('users').where('email', '==', data.email).get()
@@ -54,6 +54,9 @@ const updateUserById = async (data, id) => {
             }
             if (data.name) {
               trip.userDriverName = data.name
+              authD.updateUser(id, {
+                displayName: data.name
+              })
             }
             db.collection('trips').doc(doc.id).update(trip)
           })
@@ -74,6 +77,21 @@ const deleteUserById = async (id) => {
     return { status: 404, message: 'User not found' }
   } else {
     await db.collection('users').doc(id).delete()
+    await db.collection('trips').where('userDriver', '==', id).get()
+      .then(snapshot => {
+        snapshot.forEach(doc => {
+          db.collection('trips').doc(doc.id).delete()
+        })
+      })
+      .catch(err => console.log(err))
+    await db.collection('passengersRequest').where('userPassenger', '==', id).get()
+      .then(snapshot => {
+        snapshot.forEach(doc => {
+          db.collection('passengersRequest').doc(doc.id).delete()
+        })
+      })
+      .catch(err => console.log(err))
+
     return { status: 200, message: 'Delete user success' }
   }
 }

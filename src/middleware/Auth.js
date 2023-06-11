@@ -21,8 +21,3 @@ export const authMiddleware = (req, res, next) => {
 }
 
 export default authMiddleware
-
-/**       if (uid !== req.params.id) {
-        res.status(403).json({ message: 'Forbidden' })
-        return
-      } */

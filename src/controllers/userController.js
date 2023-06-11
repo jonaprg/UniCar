@@ -11,7 +11,7 @@ const getUserById = async (req, res) => {
 }
 const createNewUser = async (req, res) => {
   try {
-    if (!req.body.name || !req.body.email || !req.body.university) {
+    if (!req.body.name || !req.body.email) {
       res.send({ status: 400, message: 'Please provide all data' })
       return
     }
@@ -19,7 +19,6 @@ const createNewUser = async (req, res) => {
     const id = req.params.id
     const userData = {
       name: req.body.name,
-      university: req.body.university,
       email: req.body.email
     }
 
