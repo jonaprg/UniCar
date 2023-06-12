@@ -79,7 +79,7 @@ const createNewTrip = async (data, id) => {
     passengersData: {},
     userDriverName: getUser.data().name
   })
-  return JSON.stringify({ status: 201, message: 'Create new trip success' })
+  return { status: 201, message: 'Create new trip success' }
 }
 
 const updateTrip = async (tripData, tripId, userDriverId) => {
@@ -103,10 +103,10 @@ const deteleTripByDriver = async (id, userId) => {
   console.log(tripDoc.docs[0])
   console.log(id, userId)
   if (tripDoc.empty) {
-    return JSON.stringify({ status: 404, message: 'Trip not found' })
+    return { status: 404, message: 'Trip not found' }
   }
   await tripDoc.docs[0].ref.delete()
-  return JSON.stringify({ status: 200, message: 'Delete trip success' })
+  return { status: 200, message: 'Delete trip success' }
 }
 
 const deletePassengerFromTrip = async (id, userId) => {
@@ -118,7 +118,7 @@ const deletePassengerFromTrip = async (id, userId) => {
     .get()
 
   if (tripDoc.empty) {
-    return JSON.stringify({ status: 404, message: 'Trip not found' })
+    return { status: 404, message: 'Trip not found' }
   }
   const tripData = tripDoc.docs[0].data()
   console.log(tripData)
@@ -126,7 +126,7 @@ const deletePassengerFromTrip = async (id, userId) => {
   const passengerIndex = tripData.passengers.findIndex(p => p === userId)
   console.log(passengerIndex)
   if (passengerIndex === -1) {
-    return JSON.stringify({ status: 404, message: 'Not authorized' })
+    return { status: 404, message: 'Not authorized' }
   }
 
   // Remove the user from the passengers array
@@ -138,7 +138,7 @@ const deletePassengerFromTrip = async (id, userId) => {
       passengersData: { ...tripData.passengersData, [userId]: null }
     })
 
-  return JSON.stringify({ status: 200, message: 'Delete trip success' })
+  return { status: 200, message: 'Delete trip success' }
 }
 
 const requestPassengerToTrip = async (tripId, userId) => {
@@ -148,24 +148,23 @@ const requestPassengerToTrip = async (tripId, userId) => {
     .get()
 
   if (tripDoc.empty) {
-    return JSON.stringify({ status: 404, message: 'Trip not found' })
+    return { status: 404, message: 'Trip not found' }
   }
   if (tripDoc.docs[0].data().userDriver === userId) {
-    return JSON.stringify({ status: 404, message: 'You are the driver' })
+    return { status: 404, message: 'You are the driver' }
   }
 
   const tripData = tripDoc.docs[0].data()
-  console.log(tripData)
 
   // Check if the user is already in the passengers array
   const passengerIndex = tripData.passengers.findIndex(p => p === userId)
   if (passengerIndex !== -1) {
-    return JSON.stringify({ status: 404, message: 'Already in the trip' })
+    return { status: 404, message: 'Already in the trip' }
   }
 
   // Check if there are seats available
   if (tripData.seatsAvailable === 0) {
-    return JSON.stringify({ status: 404, message: 'No seats available' })
+    return { status: 404, message: 'No seats available' }
   }
   const existsRequest = await db.collection('passengerRequest')
     .where('tripId', '==', tripId)
@@ -173,7 +172,7 @@ const requestPassengerToTrip = async (tripId, userId) => {
     .limit(1)
     .get()
   if (!existsRequest.empty) {
-    return JSON.stringify({ status: 404, message: 'Request already sent' })
+    return { status: 404, message: 'Request already sent' }
   }
 
   const uid = short.generate()
@@ -185,7 +184,7 @@ const requestPassengerToTrip = async (tripId, userId) => {
     status: 'pending'
   })
 
-  return JSON.stringify({ status: 200, message: 'Request sent' })
+  return { status: 200, message: 'Request sent' }
 }
 
 const acceptPassengerToTrip = async (tripId, passengerId, driverId) => {
@@ -197,7 +196,7 @@ const acceptPassengerToTrip = async (tripId, passengerId, driverId) => {
     .get()
 
   if (passengerRequest.empty) {
-    return JSON.stringify({ status: 404, message: 'Passenger Request not found, or already accepted' })
+    return { status: 404, message: 'Passenger Request not found, or already accepted' }
   }
 
   const tripDoc = await db.collection('trips')
@@ -207,16 +206,16 @@ const acceptPassengerToTrip = async (tripId, passengerId, driverId) => {
     .get()
 
   if (tripDoc.empty) {
-    return JSON.stringify({ status: 404, message: 'Trip not found' })
+    return { status: 404, message: 'Trip not found' }
   }
 
   const tripData = tripDoc.docs[0].data()
   if (tripData.seatsAvailable === 0) {
-    return JSON.stringify({ status: 404, message: 'No seats available' })
+    return { status: 404, message: 'No seats available' }
   }
   const userDoc = await db.collection('users').doc(passengerId).get()
   if (userDoc.empty) {
-    return JSON.stringify({ status: 404, message: 'User not found' })
+    return { status: 404, message: 'User not found' }
   }
   console.log(userDoc.data().name)
 
@@ -230,9 +229,9 @@ const acceptPassengerToTrip = async (tripId, passengerId, driverId) => {
   })
   const update = await passengerRequest.docs[0].ref.update({ status: 'accepted' })
   if (!update) {
-    return JSON.stringify({ status: 404, message: 'Error accepting passenger' })
+    return { status: 404, message: 'Error accepting passenger' }
   }
-  return JSON.stringify({ status: 200, message: 'Passenger accepted' })
+  return { status: 200, message: 'Passenger accepted' }
 }
 
 const notAcceptedPassengerFromTrip = async (tripId, passengerId, driverId) => {
@@ -244,15 +243,15 @@ const notAcceptedPassengerFromTrip = async (tripId, passengerId, driverId) => {
     .get()
 
   if (passengerRequest.empty) {
-    return JSON.stringify({ status: 404, message: 'Passenger Request not found' })
+    return { status: 404, message: 'Passenger Request not found' }
   }
 
   const update = await passengerRequest.docs[0].ref.update({ status: 'rejected' })
   if (!update) {
-    return JSON.stringify({ status: 404, message: 'Error rejecting passenger' })
+    return { status: 404, message: 'Error rejecting passenger' }
   }
 
-  return JSON.stringify({ status: 200, message: 'Passenger rejected' })
+  return { status: 200, message: 'Passenger rejected' }
 }
 
 export default {

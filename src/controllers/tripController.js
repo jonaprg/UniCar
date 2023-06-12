@@ -66,9 +66,8 @@ const createNewTrip = async (req, res) => {
 
     }
 
-    const stat = await tripServices.createNewTrip(tripData, userDriverId)
-    console.log(stat)
-    res.send(stat)
+    const response = await tripServices.createNewTrip(tripData, userDriverId)
+    res.status(response.status).send(response)
   } catch (error) {
     console.log(error)
     res.send({ status: 400, message: 'Bad request ' })
@@ -100,7 +99,7 @@ const deteleTripByDriver = async (req, res) => {
     const { id } = req.params
     const userId = req.uid
     const response = await tripServices.deteleTripByDriver(id, userId)
-    res.send(response)
+    res.status(response.status).send(response)
   } catch {
     res.status(400).send('Error delete trip')
   }
@@ -111,7 +110,7 @@ const deletePassengerFromTrip = async (req, res) => {
     const { tripId } = req.params
     const userId = req.uid
     const response = await tripServices.deletePassengerFromTrip(tripId, userId)
-    res.send(response)
+    res.status(response.status).send(response)
   } catch {
     res.status(400).send('Error delete passenger of trip')
   }
@@ -122,7 +121,8 @@ const requestPassengerToTrip = async (req, res) => {
     const { tripId } = req.params
     const userId = req.uid
     const response = await tripServices.requestPassengerToTrip(tripId, userId)
-    res.send(response)
+    console.log(response)
+    res.status(response.status).send(response)
   } catch {
     res.status(400).send('Error add request passenger of trip')
   }
@@ -144,7 +144,7 @@ const notAcceptedPassengerFromTrip = async (req, res) => {
     const { tripId, passengerId } = req.params
     const driverId = req.uid
     const response = await tripServices.notAcceptedPassengerFromTrip(tripId, passengerId, driverId)
-    res.send(response)
+    res.status(response.status).send(response)
   } catch {
     res.status(400).send('Error to not accept passenger to trip')
   }
