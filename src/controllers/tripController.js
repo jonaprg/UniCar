@@ -32,16 +32,6 @@ const getTripsByUser = async (req, res) => {
   }
 }
 
-const getTripById = async (req, res) => {
-  try {
-    const { tripId } = req.params
-    const trip = await tripServices.getTripById(tripId)
-    res.status(200).send(trip)
-  } catch {
-    res.send('Error Get trip by id')
-  }
-}
-
 const createNewTrip = async (req, res) => {
   try {
     if (!req.uid) {
@@ -150,13 +140,23 @@ const notAcceptedPassengerFromTrip = async (req, res) => {
   }
 }
 
+const getTripRequestsById = async (req, res) => {
+  try {
+    const { tripId } = req.params
+    const trip = await tripServices.getTripRequestsById(tripId)
+    res.status(200).send(trip)
+  } catch {
+    res.status(400).send('Error Getrequests by trip')
+  }
+}
+
 export default {
   notAcceptedPassengerFromTrip,
   acceptPassengerToTrip,
   requestPassengerToTrip,
   getTripsBySearch,
   getTripsByUser,
-  getTripById,
+  getTripRequestsById,
   createNewTrip,
   updateTrip,
   deteleTripByDriver,

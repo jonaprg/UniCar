@@ -4,15 +4,15 @@ const getUserById = async (req, res) => {
   const { id } = req.params
   try {
     const user = await userServices.getUserById(id)
-    res.send(user)
+    res.status(user.status).send(user)
   } catch {
-    res.send('Eror Get user')
+    res.status(500).send('Eror Get user')
   }
 }
 const createNewUser = async (req, res) => {
   try {
     if (!req.body.name || !req.body.email) {
-      res.send({ status: 400, message: 'Please provide all data' })
+      res.status(400).send({ status: 400, message: 'Please provide all data' })
       return
     }
 
@@ -23,39 +23,40 @@ const createNewUser = async (req, res) => {
     }
 
     const resCUser = await userServices.createNewUser(userData, id)
-    res.send(resCUser)
+    res.status(resCUser.status).send(resCUser)
   } catch (error) {
     console.log(error)
-    res.send({ status: 500, message: 'Create new user failed' })
+    res.status(500).send({ status: 500, message: 'Create new user failed' })
   }
 }
 const updateUserById = async (req, res) => {
   try {
     if (!req.params.id) {
-      res.send({ status: 400, message: 'Please provide id' })
+      res.status(400).send({ status: 400, message: 'Please provide id' })
       return
     }
 
     const { id } = req.params
     if (!req.body) {
-      res.send({ status: 400, message: 'Please provide all data' })
+      res.status(400).send({ status: 400, message: 'Please provide all data' })
       return
     }
     const userData = req.body
     const response = await userServices.updateUserById(userData, id)
     console.log(response)
-    res.send(response)
+    res.status(response.status).send(response)
   } catch (error) {
-    res.send({ status: 404, message: 'Error update user' })
+    res.status(404).send({ status: 404, message: 'Error update user' })
   }
 }
 const deleteUserById = async (req, res) => {
   const { id } = req.params
   try {
     const response = await userServices.deleteUserById(id)
-    res.send(response)
+    console.log(response)
+    res.status(response.status).send(response)
   } catch {
-    res.send({ status: 500, message: 'Error delete user' })
+    res.status(500).send({ status: 500, message: 'Error delete user' })
   }
 }
 

@@ -35,8 +35,8 @@ const getTripsByUser = async (userId) => {
   return await Trips.getTripsByUser(userId)
 }
 
-const getTripById = async (id) => {
-  return await Trips.getTripById(id)
+const getTripRequestsById = async (id) => {
+  return await Trips.getTripRequestsById(id)
 }
 
 const createNewTrip = async (data, userDriverId) => {
@@ -85,7 +85,7 @@ export default {
   requestPassengerToTrip,
   getTripsBySearch,
   getTripsByUser,
-  getTripById,
+  getTripRequestsById,
   createNewTrip,
   updateTrip,
   deteleTripByDriver,

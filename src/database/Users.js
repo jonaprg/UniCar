@@ -2,7 +2,6 @@ import db, { authD } from './dbAuth.js'
 
 const createNewUser = async (data, id) => {
   const userDoc = await db.collection('users').where('email', '==', data.email).get()
-  console.log(userDoc)
   if (!userDoc.empty) {
     return { status: 409, message: 'User already exists' }
   } else {
@@ -14,21 +13,22 @@ const createNewUser = async (data, id) => {
 
 const getUserById = async (id) => {
   const userDoc = await db.collection('users').doc(id).get()
-  if (userDoc.empty) {
+  console.log(userDoc)
+  if (userDoc._fieldsProto === undefined) {
     return { status: 404, message: 'User not found' }
   }
 
   const user = userDoc.data()
 
-  const filteredFields = {}
+  const userData = {}
 
   for (const field in user) {
     if (user[field] !== undefined && user[field] !== null) {
-      filteredFields[field] = user[field]
+      userData[field] = user[field]
     }
   }
 
-  return filteredFields
+  return { status: 200, userData }
 }
 
 const updateUserById = async (data, id) => {
@@ -73,7 +73,9 @@ const updateUserById = async (data, id) => {
 
 const deleteUserById = async (id) => {
   const userDoc = await db.collection('users').doc(id).get()
-  if (!userDoc.empty) {
+  console.log(userDoc)
+
+  if (userDoc.empty) {
     return { status: 404, message: 'User not found' }
   } else {
     await db.collection('users').doc(id).delete()
@@ -91,7 +93,7 @@ const deleteUserById = async (id) => {
         })
       })
       .catch(err => console.log(err))
-
+    await authD.deleteUser(id)
     return { status: 200, message: 'Delete user success' }
   }
 }

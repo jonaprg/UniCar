@@ -5,7 +5,7 @@ const router = express.Router()
 
 router
   .get('/user', authMiddleware, tripController.getTripsByUser)
-  .get('/:id', authMiddleware, tripController.getTripById)
+  .get('/requests/:tripId', authMiddleware, tripController.getTripRequestsById)
   .post('/trip', authMiddleware, tripController.createNewTrip)
   .post('/search', authMiddleware, tripController.getTripsBySearch)
   .put('/:tripId/:passengerId/acceptPassenger', authMiddleware, tripController.acceptPassengerToTrip)

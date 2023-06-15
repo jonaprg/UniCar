@@ -12,13 +12,13 @@ const getTripsBySearch = async (params) => {
     .get()
     .then(snapshot => {
       snapshot.forEach(doc => {
-        console.log(doc.data())
         trips.push(doc.data())
       })
     })
     .catch(err => {
       console.log('Error getting documents', err)
     })
+  console.log(trips)
   return trips
 }
 
@@ -48,14 +48,6 @@ const getTripsByUser = async (userId) => {
   console.log(data)
 
   return data
-}
-
-const getTripById = async (id) => {
-  const tripDoc = await db.collection('trips').doc(id).get()
-  if (!tripDoc.empty) {
-    throw new Error('Trip not found')
-  }
-  return tripDoc.data()
 }
 
 const createNewTrip = async (data, id) => {
@@ -106,6 +98,15 @@ const deteleTripByDriver = async (id, userId) => {
     return { status: 404, message: 'Trip not found' }
   }
   await tripDoc.docs[0].ref.delete()
+
+  const passengerRequestDoc = await db.collection('passengerRequest')
+    .where('tripId', '==', id)
+    .get()
+  if (!passengerRequestDoc.empty) {
+    passengerRequestDoc.forEach(doc => {
+      doc.ref.delete()
+    })
+  }
   return { status: 200, message: 'Delete trip success' }
 }
 
@@ -181,7 +182,8 @@ const requestPassengerToTrip = async (tripId, userId) => {
     uid,
     tripId,
     passengerId: userId,
-    status: 'pending'
+    status: 'pending',
+    timeCreated: new Date()
   })
 
   return { status: 200, message: 'Request sent' }
@@ -254,13 +256,37 @@ const notAcceptedPassengerFromTrip = async (tripId, passengerId, driverId) => {
   return { status: 200, message: 'Passenger rejected' }
 }
 
+const getTripRequestsById = async (id) => {
+  try {
+    const querySnapshot = await db.collection('passengerRequest')
+      .where('tripId', '==', id)
+      .get()
+
+    const data = []
+    for (const doc of querySnapshot.docs) {
+      const requestData = doc.data()
+      try {
+        const userDoc = await db.collection('users').doc(requestData.passengerId).get()
+        const userData = userDoc.data()
+        data.push({ ...requestData, passengerName: userData.name })
+      } catch (error) {
+        return { status: 404, message: 'User not found' }
+      }
+    }
+
+    return data
+  } catch (error) {
+    return { status: 404, message: 'Error getting trip requests' }
+  }
+}
+
 export default {
   notAcceptedPassengerFromTrip,
   acceptPassengerToTrip,
   requestPassengerToTrip,
   getTripsBySearch,
   getTripsByUser,
-  getTripById,
+  getTripRequestsById,
   createNewTrip,
   updateTrip,
   deteleTripByDriver,
