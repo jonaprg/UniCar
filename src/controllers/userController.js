@@ -19,7 +19,8 @@ const createNewUser = async (req, res) => {
     const id = req.params.id
     const userData = {
       name: req.body.name,
-      email: req.body.email
+      email: req.body.email,
+      uid: id
     }
 
     const resCUser = await userServices.createNewUser(userData, id)

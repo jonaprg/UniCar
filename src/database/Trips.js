@@ -18,7 +18,6 @@ const getTripsBySearch = async (params) => {
     .catch(err => {
       console.log('Error getting documents', err)
     })
-  console.log(trips)
   return trips
 }
 
@@ -53,7 +52,7 @@ const getTripsByUser = async (userId) => {
 const createNewTrip = async (data, id) => {
   const newTrip = await db.collection('trips').doc()
   const getUser = await db.collection('users').doc(id).get()
-  const getDayMonthYear = data.date.split('T')[0]
+  const getDayMonthYear = data.date.split(' ')[0]
   await newTrip.set({
     tripId: short.generate(),
     userDriver: id,
@@ -142,7 +141,7 @@ const deletePassengerFromTrip = async (id, userId) => {
   return { status: 200, message: 'Delete trip success' }
 }
 
-const requestPassengerToTrip = async (tripId, userId) => {
+const requestPassengerToTrip = async (tripId, userId, seats) => {
   const tripDoc = await db.collection('trips')
     .where('tripId', '==', tripId)
     .limit(1)
@@ -164,7 +163,7 @@ const requestPassengerToTrip = async (tripId, userId) => {
   }
 
   // Check if there are seats available
-  if (tripData.seatsAvailable === 0) {
+  if (tripData.seatsAvailable < seats) {
     return { status: 404, message: 'No seats available' }
   }
   const existsRequest = await db.collection('passengerRequest')
@@ -183,7 +182,8 @@ const requestPassengerToTrip = async (tripId, userId) => {
     tripId,
     passengerId: userId,
     status: 'pending',
-    timeCreated: new Date()
+    timeCreated: new Date(),
+    seats
   })
 
   return { status: 200, message: 'Request sent' }
@@ -200,7 +200,6 @@ const acceptPassengerToTrip = async (tripId, passengerId, driverId) => {
   if (passengerRequest.empty) {
     return { status: 404, message: 'Passenger Request not found, or already accepted' }
   }
-
   const tripDoc = await db.collection('trips')
     .where('tripId', '==', tripId)
     .where('userDriver', '==', driverId)
@@ -212,7 +211,9 @@ const acceptPassengerToTrip = async (tripId, passengerId, driverId) => {
   }
 
   const tripData = tripDoc.docs[0].data()
-  if (tripData.seatsAvailable === 0) {
+  const dataRequest = passengerRequest.docs[0].data()
+
+  if (tripData.seatsAvailable === dataRequest.seats) {
     return { status: 404, message: 'No seats available' }
   }
   const userDoc = await db.collection('users').doc(passengerId).get()
@@ -223,7 +224,7 @@ const acceptPassengerToTrip = async (tripId, passengerId, driverId) => {
 
   await tripDoc.docs[0].ref.update({
     passengers: [...tripData.passengers, passengerId],
-    seatsAvailable: tripData.seatsAvailable - 1,
+    seatsAvailable: tripData.seatsAvailable - dataRequest.seats,
     passengersData: {
       ...tripData.passengersData,
       [passengerId]: { name: userDoc.data().name, id: passengerId }
@@ -260,6 +261,7 @@ const getTripRequestsById = async (id) => {
   try {
     const querySnapshot = await db.collection('passengerRequest')
       .where('tripId', '==', id)
+      .where('status', '==', 'pending')
       .get()
 
     const data = []
@@ -280,7 +282,27 @@ const getTripRequestsById = async (id) => {
   }
 }
 
+const getTripById = async (id) => {
+  try {
+    console.log(id)
+    const querySnapshot = await db.collection('trips')
+      .where('tripId', '==', id)
+      .limit(1)
+      .get()
+    console.log(querySnapshot)
+
+    if (querySnapshot.empty) {
+      return { status: 404, message: 'Trip not found' }
+    }
+
+    return { status: 200, message: querySnapshot.docs[0].data() }
+  } catch (error) {
+    return { status: 404, message: 'Error getting trip' }
+  }
+}
+
 export default {
+  getTripById,
   notAcceptedPassengerFromTrip,
   acceptPassengerToTrip,
   requestPassengerToTrip,

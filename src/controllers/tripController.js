@@ -12,7 +12,7 @@ const getTripsBySearch = async (req, res) => {
       origin,
       destination,
       seats,
-      dateTime: dateTime.split('T')[0]
+      dateTime
     }
 
     const trips = await tripServices.getTripsBySearch(params)
@@ -24,6 +24,7 @@ const getTripsBySearch = async (req, res) => {
 
 const getTripsByUser = async (req, res) => {
   try {
+    console.log('uid', req.uid)
     const id = req.uid
     const trips = await tripServices.getTripsByUser(id)
     res.status(200).send(trips)
@@ -108,9 +109,9 @@ const deletePassengerFromTrip = async (req, res) => {
 
 const requestPassengerToTrip = async (req, res) => {
   try {
-    const { tripId } = req.params
+    const { tripId, seats } = req.params
     const userId = req.uid
-    const response = await tripServices.requestPassengerToTrip(tripId, userId)
+    const response = await tripServices.requestPassengerToTrip(tripId, userId, seats)
     console.log(response)
     res.status(response.status).send(response)
   } catch {
@@ -150,7 +151,18 @@ const getTripRequestsById = async (req, res) => {
   }
 }
 
+const getTripById = async (req, res) => {
+  try {
+    const { tripId } = req.params
+    const trip = await tripServices.getTripById(tripId)
+    res.status(trip.status).send(trip)
+  } catch {
+    res.status(400).send('Error Get trip by id')
+  }
+}
+
 export default {
+  getTripById,
   notAcceptedPassengerFromTrip,
   acceptPassengerToTrip,
   requestPassengerToTrip,

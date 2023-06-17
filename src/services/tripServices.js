@@ -68,8 +68,8 @@ const deletePassengerFromTrip = async (tripId, userId) => {
   return await Trips.deletePassengerFromTrip(tripId, userId)
 }
 
-const requestPassengerToTrip = async (tripId, userId) => {
-  return await Trips.requestPassengerToTrip(tripId, userId)
+const requestPassengerToTrip = async (tripId, userId, seats) => {
+  return await Trips.requestPassengerToTrip(tripId, userId, seats)
 }
 
 const acceptPassengerToTrip = async (tripId, passengerId, driverId) => {
@@ -79,7 +79,12 @@ const notAcceptedPassengerFromTrip = async (tripId, userId) => {
   return await Trips.notAcceptedPassengerFromTrip(tripId, userId)
 }
 
+const getTripById = async (tripId) => {
+  return await Trips.getTripById(tripId)
+}
+
 export default {
+  getTripById,
   notAcceptedPassengerFromTrip,
   acceptPassengerToTrip,
   requestPassengerToTrip,
