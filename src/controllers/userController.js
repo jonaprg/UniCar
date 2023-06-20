@@ -43,6 +43,7 @@ const updateUserById = async (req, res) => {
       return
     }
     const userData = req.body
+    console.log(userData)
     const response = await userServices.updateUserById(userData, id)
     console.log(response)
     res.status(response.status).send(response)

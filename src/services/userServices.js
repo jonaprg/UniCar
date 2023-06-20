@@ -19,7 +19,6 @@ const updateUserById = async (data, uid) => {
       return { status: 400, message: 'Name is not valid or too long' }
     }
   }
-
   return await Users.updateUserById(data, uid)
 }
 
@@ -29,12 +28,11 @@ const deleteUserById = async (id) => {
 
 const validateNumero = (numero) => {
   const regex = /^\d{6,9}$/
-  console.log(regex.test(numero))
   return regex.test(numero)
 }
 
 const isValidateInputWithMaxLength = (input) => {
-  const regex = /^[a-zA-Z0-9]+$/
+  const regex = /^[A-Za-z\s]+$/
   const containsSafeCharacters = regex.test(input)
   const hasValidLength = input.length <= 50
 

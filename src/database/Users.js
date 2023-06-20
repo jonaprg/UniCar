@@ -61,7 +61,7 @@ const updateUserById = async (data, id) => {
             db.collection('trips').doc(doc.id).update(trip)
           })
         })
-        .catch(err => console.log(err))
+        .catch(err => console.log('OLA', err))
     }
 
     return { status: 200, message: 'Update user success' }
