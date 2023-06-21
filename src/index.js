@@ -13,7 +13,6 @@ app.use(express.urlencoded({ extended: false }))
 
 app.use('/api/v1/users', userRoutes)
 app.use('/api/v1/trips', tripRoutes)
-// app.use('/api/v1/ratings', ratingRoutes)
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
