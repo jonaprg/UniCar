@@ -19,11 +19,29 @@ const updateUserById = async (data, uid) => {
       return { status: 400, message: 'Name is not valid or too long' }
     }
   }
+
+  if (data.university) {
+    if (!isValidateInputWithMaxLength(data.university)) {
+      return { status: 400, message: 'University is not valid or too long' }
+    }
+  }
+
+  if (data.email) {
+    if (!validateEmail(data.email)) {
+      return { status: 400, message: 'Email is not valid' }
+    }
+  }
+
   return await Users.updateUserById(data, uid)
 }
 
 const deleteUserById = async (id) => {
   return await Users.deleteUserById(id)
+}
+
+const validateEmail = (email) => {
+  const regex = /^[A-Za-z0-9]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/
+  return regex.test(email)
 }
 
 const validateNumero = (numero) => {
