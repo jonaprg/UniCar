@@ -44,10 +44,8 @@ const createNewTrip = async (data, userDriverId) => {
     const exists = await checkExistingTrip(data.origin, data.destination, data.date, userDriverId)
 
     if (exists) {
-      console.log('eNTRO AQUI EXISTE')
       return JSON.stringify({ status: 409, message: 'Ya existe un viaje con los mismos datos' })
     } else {
-      console.log('NO EXISTE')
       return await Trips.createNewTrip(data, userDriverId)
     }
   } catch (error) {
@@ -84,6 +82,7 @@ const getTripById = async (tripId) => {
 }
 
 export default {
+  checkExistingTrip,
   getTripById,
   notAcceptedPassengerFromTrip,
   acceptPassengerToTrip,

@@ -3,7 +3,6 @@ import short from 'short-uuid'
 
 const getTripsBySearch = async (params) => {
   const trips = []
-  console.log(params)
   await db.collection('trips')
     .where('origin', '==', params.origin)
     .where('destination', '==', params.destination)
@@ -43,8 +42,6 @@ const getTripsByUser = async (userId) => {
     .catch(err => {
       console.log('Error getting documents', err)
     })
-
-  console.log(data)
 
   return data
 }

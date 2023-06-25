@@ -20,6 +20,18 @@ const updateUserById = async (data, uid) => {
     }
   }
 
+  if (data.university) {
+    if (!isValidateInputWithMaxLength(data.university)) {
+      return { status: 400, message: 'University is not valid or too long' }
+    }
+  }
+
+  if (data.email) {
+    if (!validateEmail(data.email)) {
+      return { status: 400, message: 'Email is not valid' }
+    }
+  }
+
   return await Users.updateUserById(data, uid)
 }
 
@@ -27,14 +39,18 @@ const deleteUserById = async (id) => {
   return await Users.deleteUserById(id)
 }
 
+const validateEmail = (email) => {
+  const regex = /^[A-Za-z0-9]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/
+  return regex.test(email)
+}
+
 const validateNumero = (numero) => {
   const regex = /^\d{6,9}$/
-  console.log(regex.test(numero))
   return regex.test(numero)
 }
 
 const isValidateInputWithMaxLength = (input) => {
-  const regex = /^[a-zA-Z0-9]+$/
+  const regex = /^[A-Za-z\s]+$/
   const containsSafeCharacters = regex.test(input)
   const hasValidLength = input.length <= 50
 

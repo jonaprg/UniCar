@@ -43,6 +43,7 @@ const updateUserById = async (req, res) => {
       return
     }
     const userData = req.body
+    console.log(userData)
     const response = await userServices.updateUserById(userData, id)
     console.log(response)
     res.status(response.status).send(response)
@@ -50,6 +51,7 @@ const updateUserById = async (req, res) => {
     res.status(404).send({ status: 404, message: 'Error update user' })
   }
 }
+
 const deleteUserById = async (req, res) => {
   const { id } = req.params
   try {
