@@ -78,7 +78,7 @@ test('Update user phone should return an error for invalid phone', async () => {
   })
 })
 
-test('Update the user with name and phone and return success', async () => {
+test('Update the user with email and return success', async () => {
   // Mock input data
   const req = {
     params: { id: '1' },
