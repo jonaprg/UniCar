@@ -130,6 +130,31 @@ test('Update user email should return an error for invalid email', async () => {
   })
 })
 
+test('Update the user with name including characters specials and return error', async () => {
+  // Mock input data
+  const req = {
+    params: { id: '1' },
+    body: {
+      name: 'John Doe$'
+    }
+  }
+  // Mock response object
+  const res = {
+    status: sinon.stub().returnsThis(),
+    send: sinon.stub()
+  }
+
+  // Call the controller function
+  await userController.updateUserById(req, res)
+
+  // Assertions
+  sinon.assert.calledWith(res.status, 400)
+  sinon.assert.calledWith(res.send, {
+    status: 400,
+    message: 'Name is not valid or too long'
+  })
+})
+
 test('Update the user with all data and return success', async () => {
   // Mock input data
   const req = {
