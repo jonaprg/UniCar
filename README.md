@@ -42,16 +42,23 @@ npm install
 }
 
 ```
-5. Run 
+ - You need to create a .env file and add the following content. (PATH_URL is the path where the file you created earlier is located)
+GOOGLE_APPLICATION_CREDENTIALS="PATH_URL"
+
+5. Run developement
 
 ```bash
 npm run dev
 ```
-5.1 Run linter javascript
+5.1 Run prod
+```bash
+npm run dev
+```
+5.2 Run linter JS Standard
 ```bash
   npm run lint
 ```
-5.2 Run test
+5.3 Run test
 ```bash
  node --test
 ```
