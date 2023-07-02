@@ -14,15 +14,15 @@ const checkExistingTrip = async (origin, destination, date, userDriverId) => {
 
     // Si existen documentos que coinciden con los filtros, se encontró un viaje existente
     if (!snapshot.empty) {
-      console.log('Entro aqui, hay un viaje existente')
+      console.error('Entro aqui, hay un viaje existente')
       return true
     }
 
     // No se encontró un viaje existente con los mismos datos
-    console.log('No se encontró un viaje existente con los mismos datos')
+    console.error('No se encontró un viaje existente con los mismos datos')
     return false
   } catch (error) {
-    console.log('Error al comprobar el viaje existente:', error)
+    console.error('Error al comprobar el viaje existente:', error)
     throw error
   }
 }
@@ -49,7 +49,7 @@ const createNewTrip = async (data, userDriverId) => {
       return await Trips.createNewTrip(data, userDriverId)
     }
   } catch (error) {
-    console.log('Error al crear un nuevo viaje:', error)
+    console.error('Error al crear un nuevo viaje:', error)
     throw error
   }
 }

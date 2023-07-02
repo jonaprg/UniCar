@@ -9,10 +9,8 @@ export const authMiddleware = (req, res, next) => {
   const token = authorization.split('Bearer ')[1]
   authD.verifyIdToken(token)
     .then((decodedToken) => {
-      console.log('Auth middleware')
       const { uid } = decodedToken
       req.uid = uid
-      console.log(req.uid)
       next()
     })
     .catch(() => {

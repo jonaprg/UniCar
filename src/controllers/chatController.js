@@ -15,9 +15,7 @@ const createChatRoom = async (req, res) => {
 const deleteRoomChatById = async (req, res) => {
   try {
     const { roomId } = req.params
-    console.log('roomId', roomId)
     const result = await chatServices.deleteRoomChatById(roomId)
-    console.log('result', result)
     res.status(result.status).send(result)
   } catch (error) {
     res.status(500).send({ status: 500, message: 'Error - Not authorized' })
