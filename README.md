@@ -25,7 +25,7 @@ npm install
 4. Set up Firebase:
 
   - Create a new Firebase project at https://console.firebase.google.com.
-  - Generate your Firebase configuration object.
+  - Generate your Firebase configuration object with Firebase Storage and Authentifcation enable.
   - Add the Firebase configuration to your project's .env file:
   ```
 {
