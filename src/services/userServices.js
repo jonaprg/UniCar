@@ -52,7 +52,7 @@ const validateNumero = (numero) => {
 const isValidateInputWithMaxLength = (input) => {
   const regex = /^[A-Za-z\s]+$/
   const containsSafeCharacters = regex.test(input)
-  const hasValidLength = input.length <= 50
+  const hasValidLength = input.length <= 35
 
   return containsSafeCharacters && hasValidLength
 }
