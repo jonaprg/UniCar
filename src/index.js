@@ -17,5 +17,5 @@ app.use('/api/v1/trips', tripRoutes)
 app.use('/api/v1/chats', chatRoutes)
 
 app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`)
+  console.log(`http://localhost:${port}`)
 })

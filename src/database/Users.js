@@ -13,7 +13,6 @@ const createNewUser = async (data, id) => {
 
 const getUserById = async (id) => {
   const userDoc = await db.collection('users').doc(id).get()
-  console.log(userDoc)
   if (userDoc._fieldsProto === undefined) {
     return { status: 404, message: 'User not found' }
   }
@@ -61,19 +60,18 @@ const updateUserById = async (data, id) => {
             db.collection('trips').doc(doc.id).update(trip)
           })
         })
-        .catch(err => console.log('OLA', err))
+        .catch(err => console.error('ERROR - Not authorized', err))
     }
 
     return { status: 200, message: 'Update user success' }
   } catch (error) {
-    console.log(error)
+    console.error(error)
     return { status: 500, message: 'Update user failed' }
   }
 }
 
 const deleteUserById = async (id) => {
   const userDoc = await db.collection('users').doc(id).get()
-  console.log(userDoc)
 
   if (userDoc.empty) {
     return { status: 404, message: 'User not found' }
@@ -85,14 +83,14 @@ const deleteUserById = async (id) => {
           db.collection('trips').doc(doc.id).delete()
         })
       })
-      .catch(err => console.log(err))
+      .catch(err => console.error(err))
     await db.collection('passengersRequest').where('userPassenger', '==', id).get()
       .then(snapshot => {
         snapshot.forEach(doc => {
           db.collection('passengersRequest').doc(doc.id).delete()
         })
       })
-      .catch(err => console.log(err))
+      .catch(err => console.error(err))
     await authD.deleteUser(id)
     return { status: 200, message: 'Delete user success' }
   }

@@ -15,7 +15,7 @@ const getTripsBySearch = async (params) => {
       })
     })
     .catch(err => {
-      console.log('Error getting documents', err)
+      console.error('Error getting documents', err)
     })
   return trips
 }
@@ -40,7 +40,7 @@ const getTripsByUser = async (userId) => {
         })
     })
     .catch(err => {
-      console.log('Error getting documents', err)
+      console.error('Error getting documents', err)
     })
 
   return data
@@ -88,8 +88,6 @@ const deteleTripByDriver = async (id, userId) => {
     .limit(1)
     .get()
 
-  console.log(tripDoc.docs[0])
-  console.log(id, userId)
   if (tripDoc.empty) {
     return { status: 404, message: 'Trip not found' }
   }
@@ -107,8 +105,6 @@ const deteleTripByDriver = async (id, userId) => {
 }
 
 const deletePassengerFromTrip = async (id, userId) => {
-  console.log(id, userId)
-
   const tripDoc = await db.collection('trips')
     .where('tripId', '==', id)
     .limit(1)
@@ -118,10 +114,8 @@ const deletePassengerFromTrip = async (id, userId) => {
     return { status: 404, message: 'Trip not found' }
   }
   const tripData = tripDoc.docs[0].data()
-  console.log(tripData)
 
   const passengerIndex = tripData.passengers.findIndex(p => p === userId)
-  console.log(passengerIndex)
   if (passengerIndex === -1) {
     return { status: 404, message: 'Not authorized' }
   }
@@ -217,7 +211,6 @@ const acceptPassengerToTrip = async (tripId, passengerId, driverId) => {
   if (userDoc.empty) {
     return { status: 404, message: 'User not found' }
   }
-  console.log(userDoc.data().name)
 
   await tripDoc.docs[0].ref.update({
     passengers: [...tripData.passengers, passengerId],
@@ -281,12 +274,10 @@ const getTripRequestsById = async (id) => {
 
 const getTripById = async (id) => {
   try {
-    console.log(id)
     const querySnapshot = await db.collection('trips')
       .where('tripId', '==', id)
       .limit(1)
       .get()
-    console.log(querySnapshot)
 
     if (querySnapshot.empty) {
       return { status: 404, message: 'Trip not found' }

@@ -24,7 +24,6 @@ const getTripsBySearch = async (req, res) => {
 
 const getTripsByUser = async (req, res) => {
   try {
-    console.log('uid', req.uid)
     const id = req.uid
     const trips = await tripServices.getTripsByUser(id)
     res.status(200).send(trips)
@@ -60,7 +59,7 @@ const createNewTrip = async (req, res) => {
     const response = await tripServices.createNewTrip(tripData, userDriverId)
     res.status(response.status).send(response)
   } catch (error) {
-    console.log(error)
+    console.error(error)
     res.send({ status: 400, message: 'Bad request ' })
   }
 }
@@ -112,7 +111,6 @@ const requestPassengerToTrip = async (req, res) => {
     const { tripId, seats } = req.params
     const userId = req.uid
     const response = await tripServices.requestPassengerToTrip(tripId, userId, seats)
-    console.log(response)
     res.status(response.status).send(response)
   } catch {
     res.status(400).send('Error add request passenger of trip')
